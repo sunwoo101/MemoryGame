@@ -201,7 +201,7 @@ def easy():
     global word
     print(word)
 
-    easy = True
+    countdown = 10
 
     while easy:
         # If exit button pressed
@@ -217,14 +217,17 @@ def easy():
         TextRect.center = (center)
         window.blit(TextSurf, TextRect)
 
+        # Display countdown
+        TextSurf, TextRect = text_objects(f"Starting in {countdown}...", mediumText)
+        TextRect.center = (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
         pygame.display.update()
-        clock.tick(fps)
+        clock.tick(1)
+        countdown -= 1
 
-        # 5 second timer
-        timer(5)
-
-        # Start game
-        game()
+        if countdown == 0:
+            game()
 
 
 # Medium
