@@ -30,10 +30,14 @@ smallText = pygame.font.Font("roboto.ttf", 20)
 # Colours
 white = (255, 255, 255)
 black = (0, 0, 0)
-red = (200, 0, 0)
-green = (0, 200, 0)
-bright_red = (255, 0, 0)
-bright_green = (0, 255, 0)
+red = (255, 0, 0)
+bright_red = (255, 150, 150)
+green = (0, 255, 0)
+bright_green = (150, 255, 150)
+yellow = (255, 255, 0)
+bright_yellow = (255, 255, 150)
+purple = (255, 0, 255)
+bright_purple = (255, 150, 255)
 
 
 # Timer (In seconds)
@@ -74,9 +78,7 @@ def button(button_text, button_x, button_y, button_width, button_height, inactiv
 # Splashscreen
 def splashscreen():
 
-    splashscreen = True
-
-    while splashscreen:
+    while True:
         # If exit button pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -85,7 +87,7 @@ def splashscreen():
         # Background
         window.fill(white)
 
-        # Text
+        # Splashscreen text
         TextSurf, TextRect = text_objects("Sun Woo's Memory Game", largeText)
         TextRect.center = (center)
         window.blit(TextSurf, TextRect)
@@ -103,9 +105,7 @@ def splashscreen():
 # Menu
 def menu():
 
-    menu = True
-
-    while menu:
+    while True:
         # If exit button pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -135,9 +135,7 @@ def menu():
 # Select diffuculty
 def difficulty_selection():
 
-    difficulty_selection = True
-
-    while difficulty_selection:
+    while True:
         # If exit button pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -146,7 +144,7 @@ def difficulty_selection():
         # Background
         window.fill(white)
 
-        # Select level text
+        # Select diffuculty text
         TextSurf, TextRect = text_objects("Select difficulty", largeText)
         TextRect.center = (x_center, y_center - 100)
         window.blit(TextSurf, TextRect)
@@ -155,12 +153,12 @@ def difficulty_selection():
         button("Easy", x_center - 250, y_center, button_width, button_height, green, bright_green, easy)
 
         # Medium button
-        button("Medium", x_center - button_width/2, y_center, button_width, button_height, red, bright_red, medium)
+        button("Medium", x_center - button_width/2, y_center, button_width, button_height, yellow, bright_yellow, medium)
 
         # Hard button
-        button("Hard", x_center + 150, y_center, button_width, button_height, red, bright_red, hard)
+        button("Hard", x_center + 150, y_center, button_width, button_height, purple, bright_purple, hard)
 
-        # Hard button
+        # Back button
         button("Back", x_center - 250, y_center + 150, button_width, button_height, red, bright_red, menu)
 
         pygame.display.update()
@@ -170,9 +168,7 @@ def difficulty_selection():
 # Instructions
 def instructions():
 
-    instructions = True
-
-    while instructions:
+    while True:
         # If exit button pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -181,9 +177,29 @@ def instructions():
         # Background
         window.fill(white)
 
-        # Select level text
+        # Instructions text
         TextSurf, TextRect = text_objects("How to play", largeText)
+        TextRect.center = (x_center, y_center - 200)
+        window.blit(TextSurf, TextRect)
+
+        TextSurf, TextRect = text_objects("A random set of characters will be displayed on the screen for a set amount of time.", smallText)
         TextRect.center = (x_center, y_center - 100)
+        window.blit(TextSurf, TextRect)
+
+        TextSurf, TextRect = text_objects("Easy: 5 seconds", smallText)
+        TextRect.center = (x_center, y_center - 50)
+        window.blit(TextSurf, TextRect)
+
+        TextSurf, TextRect = text_objects("Medium: 3 seconds", smallText)
+        TextRect.center = (x_center, y_center - 25)
+        window.blit(TextSurf, TextRect)
+
+        TextSurf, TextRect = text_objects("Hard: 1 seconds", smallText)
+        TextRect.center = (x_center, y_center)
+        window.blit(TextSurf, TextRect)
+
+        TextSurf, TextRect = text_objects("After the timer is up type the characters in to the input box.", smallText)
+        TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
         # Hard button
@@ -199,11 +215,46 @@ def easy():
     random_word()
 
     global word
-    print(word)
 
-    countdown = 10
+    countdown = 5
 
-    while easy:
+    while True:
+        # If exit button pressed
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display word
+        TextSurf, TextRect = text_objects(f"The word is: {word}", largeText)
+        TextRect.center = (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display countdown
+        TextSurf, TextRect = text_objects(f"Starting in {countdown}...", mediumText)
+        TextRect.center = (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        pygame.display.update()
+        clock.tick(1)
+        countdown -= 1
+
+        if countdown == 0:
+            menu()
+
+
+# Medium
+def medium():
+
+    random_word()
+
+    global word
+
+    countdown = 3
+
+    while True:
         # If exit button pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -230,51 +281,16 @@ def easy():
             game()
 
 
-# Medium
-def medium():
-
-    random_word()
-
-    global word
-    print(word)
-
-    medium = True
-
-    while medium:
-        # If exit button pressed
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-
-        # Background
-        window.fill(white)
-
-        # Display word
-        TextSurf, TextRect = text_objects(f"The word is: {word}", largeText)
-        TextRect.center = (x_center, y_center - 100)
-        window.blit(TextSurf, TextRect)
-
-        pygame.display.update()
-        clock.tick(fps)
-
-        # 3 second timer
-        timer(3)
-
-        # Start game
-        game()
-
-
 # Hard
 def hard():
 
     random_word()
 
     global word
-    print(word)
 
-    hard = True
+    countdown = 1
 
-    while hard:
+    while True:
         # If exit button pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -285,17 +301,20 @@ def hard():
 
         # Display word
         TextSurf, TextRect = text_objects(f"The word is: {word}", largeText)
-        TextRect.center = (x_center, y_center - 100)
+        TextRect.center = (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display countdown
+        TextSurf, TextRect = text_objects(f"Starting in {countdown}...", mediumText)
+        TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
         pygame.display.update()
-        clock.tick(fps)
+        clock.tick(1)
+        countdown -= 1
 
-        # 1 second timer
-        timer(1)
-
-        # Start game
-        game()
+        if countdown == 0:
+            game()
 
 
 # Word generation
