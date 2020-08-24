@@ -19,6 +19,8 @@ y_center = window_height/2
 center = x_center, y_center
 button_width = 120
 button_height = 50
+input_box_width = 400
+input_box_height = 50
 character_set = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"
 word = ""
 
@@ -60,19 +62,25 @@ def button(button_text, button_x, button_y, button_width, button_height, inactiv
 
     # Button
     if button_x + button_width > mouse_position[0] > button_x and button_y + button_height > mouse_position[1] > button_y:
-        pygame.draw.rect(window, active_colour, (button_x, button_y, button_width, button_height))
+        pygame.draw.rect(window, active_colour, (button_x - button_width/2, button_y - button_height/2, button_width, button_height))
 
         # Mouse click
         if mouse_click[0] == 1 and action is not None:
             action()
 
     else:
-        pygame.draw.rect(window, inactive_colour, (button_x, button_y, button_width, button_height))
+        pygame.draw.rect(window, inactive_colour, (button_x - button_width/2, button_y - button_height/2, button_width, button_height))
 
     # Button text
     TextSurf, TextRect = text_objects(button_text, smallText)
-    TextRect.center = (button_x + (button_width / 2), button_y + (button_height / 2))
+    TextRect.center = (button_x, button_y)
     window.blit(TextSurf, TextRect)
+
+
+# Input box renderer
+def box(input_box_x, input_box_y, input_box_width, input_box_height):
+    pygame.draw.rect(window, black, (input_box_x - input_box_width/2, input_box_y - input_box_height/2, input_box_width, input_box_height))
+    pygame.draw.rect(window, white, (input_box_x - input_box_width - 5/2, input_box_y - input_box_height - 5/2, input_box_width - 5, input_box_height - 5))
 
 
 # Splashscreen
@@ -120,13 +128,13 @@ def menu():
         window.blit(TextSurf, TextRect)
 
         # Start button
-        button("Start", x_center - 250, y_center + 100, button_width, button_height, green, bright_green, difficulty_selection)
+        button("Start", x_center - 200, y_center + 100, button_width, button_height, green, bright_green, difficulty_selection)
 
         # Instructions
-        button("Instructions", x_center - button_width/2, y_center + 100, button_width, button_height, green, bright_green, instructions)
+        button("Instructions", x_center, y_center + 100, button_width, button_height, green, bright_green, instructions)
 
         # Quit button
-        button("Quit", x_center + 150, y_center + 100, button_width, button_height, red, bright_red, quit)
+        button("Quit", x_center + 200, y_center + 100, button_width, button_height, red, bright_red, quit)
 
         pygame.display.update()
         clock.tick(fps)
@@ -150,16 +158,16 @@ def difficulty_selection():
         window.blit(TextSurf, TextRect)
 
         # Easy button
-        button("Easy", x_center - button_width/2, y_center - 100, button_width, button_height, green, bright_green, easy)
+        button("Easy", x_center, y_center - 100, button_width, button_height, green, bright_green, easy)
 
         # Medium button
-        button("Medium", x_center - button_width/2, y_center, button_width, button_height, yellow, bright_yellow, medium)
+        button("Medium", x_center, y_center, button_width, button_height, yellow, bright_yellow, medium)
 
         # Hard button
-        button("Hard", x_center - button_width/2, y_center + 100, button_width, button_height, purple, bright_purple, hard)
+        button("Hard", x_center, y_center + 100, button_width, button_height, purple, bright_purple, hard)
 
         # Back button
-        button("Back", x_center - 300, y_center + 200, button_width, button_height, red, bright_red, menu)
+        button("Back", x_center - 250, y_center + 200, button_width, button_height, red, bright_red, menu)
 
         pygame.display.update()
         clock.tick(fps)
@@ -202,7 +210,7 @@ def instructions():
         TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
-        # Hard button
+        # Back button
         button("Back", x_center - 250, y_center + 150, button_width, button_height, red, bright_red, menu)
 
         pygame.display.update()
@@ -331,7 +339,26 @@ def random_word():
 
 # Game
 def game():
-    pass
+
+    while True:
+        # If exit button pressed
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display word
+        TextSurf, TextRect = text_objects("Type the word below", mediumText)
+        TextRect.center = (x_center, y_center - 200)
+        window.blit(TextSurf, TextRect)
+
+        # Input box
+        box(x_center, y_center, input_box_width, input_box_height)
+
+        pygame.display.update()
+        clock.tick(fps)
 
 
 # Start splashscreen
