@@ -21,7 +21,7 @@ button_width = 120
 button_height = 50
 input_box_width = 400
 input_box_height = 50
-character_set = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"
+character_set = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890"
 word = ""
 input_text = ""
 
@@ -357,7 +357,8 @@ def game():
                 elif event.key == pygame.K_RETURN:
                     confirm()
                 else:
-                    input_text += event.unicode
+                    if len(input_text) < 6:
+                        input_text += event.unicode
 
         # Background
         window.fill(white)
