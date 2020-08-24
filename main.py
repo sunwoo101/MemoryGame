@@ -43,11 +43,6 @@ purple = (255, 0, 255)
 bright_purple = (255, 150, 255)
 
 
-# Timer (In seconds)
-def timer(time):
-    pygame.time.wait(time * 1000)
-
-
 # Text renderer
 def text_objects(text, font):
     textSurface = font.render(text, True, black)
@@ -99,7 +94,7 @@ def splashscreen():
         clock.tick(fps)
 
         # Timer
-        timer(2)
+        pygame.time.wait(2000)
 
         # Show menu
         menu()
@@ -243,12 +238,12 @@ def easy():
 
         pygame.display.update()
         clock.tick(1)
-        countdown -= 1
 
         if countdown == 0:
-            print(word)
             input_text = ""
             game()
+
+        countdown -= 1
 
 
 # Medium
@@ -282,11 +277,12 @@ def medium():
 
         pygame.display.update()
         clock.tick(1)
-        countdown -= 1
 
         if countdown == 0:
             input_text = ""
             game()
+
+        countdown -= 1
 
 
 # Hard
@@ -320,11 +316,12 @@ def hard():
 
         pygame.display.update()
         clock.tick(1)
-        countdown -= 1
 
         if countdown == 0:
             input_text = ""
             game()
+
+        countdown -= 1
 
 
 # Word generation
