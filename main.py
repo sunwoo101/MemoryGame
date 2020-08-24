@@ -146,20 +146,20 @@ def difficulty_selection():
 
         # Select diffuculty text
         TextSurf, TextRect = text_objects("Select difficulty", largeText)
-        TextRect.center = (x_center, y_center - 100)
+        TextRect.center = (x_center, y_center - 200)
         window.blit(TextSurf, TextRect)
 
         # Easy button
-        button("Easy", x_center - 250, y_center, button_width, button_height, green, bright_green, easy)
+        button("Easy", x_center - button_width/2, y_center - 100, button_width, button_height, green, bright_green, easy)
 
         # Medium button
         button("Medium", x_center - button_width/2, y_center, button_width, button_height, yellow, bright_yellow, medium)
 
         # Hard button
-        button("Hard", x_center + 150, y_center, button_width, button_height, purple, bright_purple, hard)
+        button("Hard", x_center - button_width/2, y_center + 100, button_width, button_height, purple, bright_purple, hard)
 
         # Back button
-        button("Back", x_center - 250, y_center + 150, button_width, button_height, red, bright_red, menu)
+        button("Back", x_center - 300, y_center + 200, button_width, button_height, red, bright_red, menu)
 
         pygame.display.update()
         clock.tick(fps)
