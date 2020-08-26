@@ -1,0 +1,508 @@
+IMPORT pygame
+IMPORT random
+
+# Initializing pygame
+pygame.init()
+
+# Window setup
+SET window_width TO 800
+SET window_height TO 600
+SET window TO pygame.display.set_mode((window_width, window_height))
+
+# Window Caption
+pygame.display.set_caption("Memory Game")
+
+# Variables
+SET clock TO pygame.time.Clock()
+SET fps TO 60
+SET x_center TO window_width/2
+SET y_center TO window_height/2
+SET center TO x_center, y_center
+SET button_width TO 120
+SET button_height TO 50
+SET input_box_width TO 400
+SET input_box_height TO 50
+SET character_set TO "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890"
+SET word TO ""
+SET input_text TO ""
+SET mouse_position TO pygame.mouse.get_pos()
+SET handled TO False
+
+# Fonts
+SET largeText TO pygame.font.Font("roboto.ttf", 60)
+SET mediumText TO pygame.font.Font("roboto.ttf", 40)
+SET smallText TO pygame.font.Font("roboto.ttf", 20)
+SET warningText TO pygame.font.Font("roboto.ttf", 10)
+
+# Colours
+SET white TO (255, 255, 255)
+SET black TO (0, 0, 0)
+SET grey TO (200, 200, 200)
+SET red TO (255, 0, 0)
+SET bright_red TO (255, 150, 150)
+SET green TO (0, 255, 0)
+SET bright_green TO (150, 255, 150)
+SET yellow TO (255, 255, 0)
+SET bright_yellow TO (255, 255, 150)
+SET purple TO (255, 0, 255)
+SET bright_purple TO (255, 150, 255)
+
+
+# Text renderer
+DEFINE FUNCTION text_objects(text, font):
+    SET textSurface TO font.render(text, True, black)
+    RETURN textSurface, textSurface.get_rect()
+
+
+# Warning renderer
+DEFINE FUNCTION warning(text, font):
+    SET textSurface TO font.render(text, True, red)
+    RETURN textSurface, textSurface.get_rect()
+
+
+# Button renderer
+DEFINE FUNCTION button(button_text, button_x, button_y, button_width, button_height, inactive_colour, active_colour, action=None):
+    global handled
+    global mouse_position
+
+    # Mouse events
+    IF mouse_position != pygame.mouse.get_pos():
+        SET handled TO True
+    SET mouse_position TO pygame.mouse.get_pos()
+    SET mouse_click TO pygame.mouse.get_pressed()
+
+    # Sets handled to false IF mouse isnt clicked
+    IF mouse_click[0] EQUALS 0:
+        SET handled TO False
+
+    # Button
+    IF button_x + button_width/2 > mouse_position[0] > button_x - button_width/2 and button_y + button_height/2 > mouse_position[1] > button_y - button_height/2:
+        pygame.draw.rect(window, active_colour, (button_x - button_width/2, button_y - button_height/2, button_width, button_height))
+        IF mouse_click[0] EQUALS 1 and action is not None and not handled:
+            SET handled TO True
+            action()
+    ELSE:
+        pygame.draw.rect(window, inactive_colour, (button_x - button_width/2, button_y - button_height/2, button_width, button_height))
+
+    # Button text
+    SET TextSurf, TextRect TO text_objects(button_text, smallText)
+    SET TextRect.center TO (button_x, button_y)
+    window.blit(TextSurf, TextRect)
+
+
+# Splashscreen
+DEFINE FUNCTION splashscreen():
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Splashscreen text
+        SET TextSurf, TextRect TO text_objects("Sun Woo's Memory Game", largeText)
+        SET TextRect.center TO (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+        # Timer
+        pygame.time.wait(2000)
+
+        # Show menu
+        menu()
+
+
+# Menu
+DEFINE FUNCTION menu():
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Menu text
+        SET TextSurf, TextRect TO text_objects("Menu", largeText)
+        SET TextRect.center TO (center)
+        window.blit(TextSurf, TextRect)
+
+        # Start button
+        button("Start", x_center - 200, y_center + 100, button_width, button_height, green, bright_green, difficulty_selection)
+
+        # Instructions button
+        button("Instructions", x_center, y_center + 100, button_width, button_height, green, bright_green, instructions)
+
+        # Quit button
+        button("Quit", x_center + 200, y_center + 100, button_width, button_height, red, bright_red, quit)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+
+# Select diffuculty
+DEFINE FUNCTION difficulty_selection():
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Select diffuculty text
+        SET TextSurf, TextRect TO text_objects("Select difficulty", largeText)
+        SET TextRect.center TO (x_center, y_center - 200)
+        window.blit(TextSurf, TextRect)
+
+        # Easy button
+        button("Easy", x_center, y_center - 100, button_width, button_height, green, bright_green, easy)
+
+        # Medium button
+        button("Medium", x_center, y_center, button_width, button_height, yellow, bright_yellow, medium)
+
+        # Hard button
+        button("Hard", x_center, y_center + 100, button_width, button_height, purple, bright_purple, hard)
+
+        # Back button
+        button("Back", x_center - 250, y_center + 200, button_width, button_height, red, bright_red, menu)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+
+# Instructions
+DEFINE FUNCTION instructions():
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Instructions text
+        SET TextSurf, TextRect TO text_objects("How to play", largeText)
+        SET TextRect.center TO (x_center, y_center - 200)
+        window.blit(TextSurf, TextRect)
+
+        SET TextSurf, TextRect TO text_objects("A random set of characters will be displayed on the screen FOR a set amount of time.", smallText)
+        SET TextRect.center TO (x_center, y_center - 100)
+        window.blit(TextSurf, TextRect)
+
+        SET TextSurf, TextRect TO text_objects("Easy: 5 seconds", smallText)
+        SET TextRect.center TO (x_center, y_center - 50)
+        window.blit(TextSurf, TextRect)
+
+        SET TextSurf, TextRect TO text_objects("Medium: 3 seconds", smallText)
+        SET TextRect.center TO (x_center, y_center - 25)
+        window.blit(TextSurf, TextRect)
+
+
+        SET TextSurf, TextRect TO text_objects("Hard: 1 seconds", smallText)
+        SET TextRect.center TO (x_center, y_center)
+        window.blit(TextSurf, TextRect)
+
+
+        SET TextSurf, TextRect TO text_objects("After the timer is up type the characters IN to the input box.", smallText)
+        SET TextRect.center TO (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        # Back button
+        button("Back", x_center - 250, y_center + 150, button_width, button_height, red, bright_red, menu)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+
+# Easy
+DEFINE FUNCTION easy():
+    random_word()
+
+    global input_text
+
+    SET countdown TO 10
+
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display word
+        SET TextSurf, TextRect TO text_objects(f"The word is: {word}", largeText)
+        SET TextRect.center TO (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display countdown
+        SET TextSurf, TextRect TO text_objects(f"Starting IN {countdown}...", mediumText)
+        SET TextRect.center TO (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(1)
+
+        # Start game when timer reaches 0
+        countdown -= 1
+        IF countdown EQUALS 0:
+            SET input_text TO ""
+            game()
+
+
+# Medium
+DEFINE FUNCTION medium():
+    random_word()
+
+    global input_text
+
+    SET countdown TO 5
+
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display word
+        SET TextSurf, TextRect TO text_objects(f"The word is: {word}", largeText)
+        SET TextRect.center TO (center)
+        window.blit(TextSurf, TextRect)
+
+
+        # Display countdown
+        SET TextSurf, TextRect TO text_objects(f"Starting IN {countdown}...", mediumText)
+        SET TextRect.center TO (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(1)
+
+        # Start game when timer reaches 0
+        countdown -= 1
+        IF countdown EQUALS 0:
+            SET input_text TO ""
+            game()
+
+# Hard
+DEFINE FUNCTION hard():
+    random_word()
+
+    global input_text
+
+    SET countdown TO 3
+
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display word
+        SET TextSurf, TextRect TO text_objects(f"The word is: {word}", largeText)
+        SET TextRect.center TO (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display countdown
+        SET TextSurf, TextRect TO text_objects(f"Starting IN {countdown}...", mediumText)
+        SET TextRect.center TO (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(1)
+
+        # Start game when timer reaches 0
+        countdown -= 1
+        IF countdown EQUALS 0:
+            SET input_text TO ""
+            game()
+
+
+# Word generation
+DEFINE FUNCTION random_word():
+    global word
+    SET word TO ""
+
+    SET i TO 0
+    WHILE i < 6:
+        word += random.choice(character_set)
+        i += 1
+
+
+# Game
+DEFINE FUNCTION game():
+    global input_text
+    global clicked
+
+    SET input_box_selected TO False
+
+    WHILE True:
+        # Mouse events
+        SET mouse_position TO pygame.mouse.get_pos()
+
+        # Events
+        FOR event IN pygame.event.get():
+            # If exit button pressed
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+            # Selecting the input box
+            IF event.type EQUALS pygame.MOUSEBUTTONDOWN:
+                IF x_center + input_box_width/2 > mouse_position[0] > x_center - input_box_width/2 and y_center + input_box_height/2 > mouse_position[1] > y_center - input_box_height/2:
+                    SET input_box_selected TO True
+                ELSE:
+                    SET input_box_selected TO False
+
+            # Detect keys
+            IF event.type EQUALS pygame.KEYDOWN:
+                IF input_box_selected:
+                    IF event.key EQUALS pygame.K_BACKSPACE:
+                        SET input_text TO input_text[:-1]
+                    ELSEIF event.key EQUALS pygame.K_RETURN:
+                        confirm()
+                    ELSE:
+                        IF len(input_text) < 6:
+                            input_text += event.unicode
+
+        # Background
+        window.fill(white)
+
+        # Title text
+        SET TextSurf, TextRect TO text_objects("Type the word below", mediumText)
+        SET TextRect.center TO (x_center, y_center - 200)
+        window.blit(TextSurf, TextRect)
+
+        # Enter button
+        button("Enter", x_center, y_center + 200, button_width, button_height, green, bright_green, confirm)
+
+        # Input box
+        IF input_box_selected:
+            # Box
+            pygame.draw.rect(window, black, (x_center - input_box_width/2, y_center - input_box_height/2, input_box_width, input_box_height))
+            pygame.draw.rect(window, white, (x_center - (input_box_width - 10)/2, y_center - (input_box_height - 10)/2, input_box_width - 10, input_box_height - 10))
+
+            # Text
+            SET TextSurf, TextRect TO text_objects(input_text, smallText)
+            SET TextRect.center TO (x_center, y_center)
+            window.blit(TextSurf, TextRect)
+        ELSE:
+            # Box
+            pygame.draw.rect(window, black, (x_center - input_box_width/2, y_center - input_box_height/2, input_box_width, input_box_height))
+            pygame.draw.rect(window, grey, (x_center - (input_box_width - 10)/2, y_center - (input_box_height - 10)/2, input_box_width - 10, input_box_height - 10))
+
+            # Text
+            SET TextSurf, TextRect TO text_objects(input_text, smallText)
+            SET TextRect.center TO (x_center, y_center)
+            window.blit(TextSurf, TextRect)
+
+            # Warning
+            SET TextSurf, TextRect TO warning("Warning: Text box is not selected", warningText)
+            SET TextRect.center TO (x_center, y_center + 40)
+            window.blit(TextSurf, TextRect)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+
+# Confirm
+DEFINE FUNCTION confirm():
+    global word
+    global input_text
+
+    IF input_text EQUALS word:
+        correct()
+    ELSE:
+        incorrect()
+
+
+# Correct
+DEFINE FUNCTION correct():
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display correct
+        SET TextSurf, TextRect TO text_objects("Correct", largeText)
+        SET TextRect.center TO (center)
+        window.blit(TextSurf, TextRect)
+
+        # Menu button
+        button("Menu", x_center - 250, y_center + 250, button_width, button_height, green, bright_green, menu)
+
+        # Quit button
+        button("Quit", x_center + 250, y_center + 250, button_width, button_height, red, bright_red, quit)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+
+# Incorrect
+DEFINE FUNCTION incorrect():
+    global word
+
+    WHILE True:
+        # If exit button pressed
+        FOR event IN pygame.event.get():
+            IF event.type EQUALS pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display incorrect
+        SET TextSurf, TextRect TO text_objects("Incorrect", largeText)
+        SET TextRect.center TO (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display answer
+        SET TextSurf, TextRect TO text_objects(f"The correct answer was {word}", smallText)
+        SET TextRect.center TO (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        # Menu button
+        button("Menu", x_center - 250, y_center + 250, button_width, button_height, green, bright_green, menu)
+
+        # Quit button
+        button("Quit", x_center + 250, y_center + 250, button_width, button_height, red, bright_red, quit)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+
+# Start splashscreen
+splashscreen()
+
+
+# Quit
+DEFINE FUNCTION quit():
+    pygame.quit()
