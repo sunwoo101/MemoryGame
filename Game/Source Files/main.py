@@ -1,6 +1,7 @@
 import pygame
 import random
 
+# Initializing pygame
 pygame.init()
 
 # Window setup
@@ -24,15 +25,19 @@ input_box_height = 50
 character_set = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890"
 word = ""
 input_text = ""
+mouse_position = pygame.mouse.get_pos()
+handled = False
 
 # Fonts
 largeText = pygame.font.Font("roboto.ttf", 60)
 mediumText = pygame.font.Font("roboto.ttf", 40)
 smallText = pygame.font.Font("roboto.ttf", 20)
+warningText = pygame.font.Font("roboto.ttf", 10)
 
 # Colours
 white = (255, 255, 255)
 black = (0, 0, 0)
+grey = (200, 200, 200)
 red = (255, 0, 0)
 bright_red = (255, 150, 150)
 green = (0, 255, 0)
@@ -49,21 +54,33 @@ def text_objects(text, font):
     return textSurface, textSurface.get_rect()
 
 
+# Warning renderer
+def warning(text, font):
+    textSurface = font.render(text, True, red)
+    return textSurface, textSurface.get_rect()
+
+
 # Button renderer
 def button(button_text, button_x, button_y, button_width, button_height, inactive_colour, active_colour, action=None):
+    global handled
+    global mouse_position
 
-    # Mouse position
+    # Mouse events
+    if mouse_position != pygame.mouse.get_pos():
+        handled = True
     mouse_position = pygame.mouse.get_pos()
     mouse_click = pygame.mouse.get_pressed()
+
+    # Sets handled to false if mouse isnt clicked
+    if mouse_click[0] == 0:
+        handled = False
 
     # Button
     if button_x + button_width/2 > mouse_position[0] > button_x - button_width/2 and button_y + button_height/2 > mouse_position[1] > button_y - button_height/2:
         pygame.draw.rect(window, active_colour, (button_x - button_width/2, button_y - button_height/2, button_width, button_height))
-
-        # Mouse click
-        if mouse_click[0] == 1 and action is not None:
+        if mouse_click[0] == 1 and action is not None and not handled:
+            handled = True
             action()
-
     else:
         pygame.draw.rect(window, inactive_colour, (button_x - button_width/2, button_y - button_height/2, button_width, button_height))
 
@@ -75,7 +92,6 @@ def button(button_text, button_x, button_y, button_width, button_height, inactiv
 
 # Splashscreen
 def splashscreen():
-
     while True:
         # If exit button pressed
         for event in pygame.event.get():
@@ -90,6 +106,7 @@ def splashscreen():
         TextRect.center = (center)
         window.blit(TextSurf, TextRect)
 
+        # Display update
         pygame.display.update()
         clock.tick(fps)
 
@@ -102,7 +119,6 @@ def splashscreen():
 
 # Menu
 def menu():
-
     while True:
         # If exit button pressed
         for event in pygame.event.get():
@@ -120,19 +136,19 @@ def menu():
         # Start button
         button("Start", x_center - 200, y_center + 100, button_width, button_height, green, bright_green, difficulty_selection)
 
-        # Instructions
+        # Instructions button
         button("Instructions", x_center, y_center + 100, button_width, button_height, green, bright_green, instructions)
 
         # Quit button
         button("Quit", x_center + 200, y_center + 100, button_width, button_height, red, bright_red, quit)
 
+        # Display update
         pygame.display.update()
         clock.tick(fps)
 
 
 # Select diffuculty
 def difficulty_selection():
-
     while True:
         # If exit button pressed
         for event in pygame.event.get():
@@ -159,13 +175,13 @@ def difficulty_selection():
         # Back button
         button("Back", x_center - 250, y_center + 200, button_width, button_height, red, bright_red, menu)
 
+        # Display update
         pygame.display.update()
         clock.tick(fps)
 
 
 # Instructions
 def instructions():
-
     while True:
         # If exit button pressed
         for event in pygame.event.get():
@@ -203,16 +219,53 @@ def instructions():
         # Back button
         button("Back", x_center - 250, y_center + 150, button_width, button_height, red, bright_red, menu)
 
+        # Display update
         pygame.display.update()
         clock.tick(fps)
 
 
 # Easy
 def easy():
-
     random_word()
 
-    global word
+    global input_text
+
+    countdown = 10
+
+    while True:
+        # If exit button pressed
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+
+        # Background
+        window.fill(white)
+
+        # Display word
+        TextSurf, TextRect = text_objects(f"The word is: {word}", largeText)
+        TextRect.center = (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display countdown
+        TextSurf, TextRect = text_objects(f"Starting in {countdown}...", mediumText)
+        TextRect.center = (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(1)
+
+        # Start game when timer reaches 0
+        countdown -= 1
+        if countdown == 0:
+            input_text = ""
+            game()
+
+
+# Medium
+def medium():
+    random_word()
+
     global input_text
 
     countdown = 5
@@ -236,22 +289,22 @@ def easy():
         TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
+        # Display update
         pygame.display.update()
         clock.tick(1)
 
+        # Start game when timer reaches 0
+        countdown -= 1
         if countdown == 0:
             input_text = ""
             game()
 
-        countdown -= 1
 
-
-# Medium
-def medium():
+# Hard
+def hard():
 
     random_word()
 
-    global word
     global input_text
 
     countdown = 3
@@ -275,58 +328,19 @@ def medium():
         TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
+        # Display update
         pygame.display.update()
         clock.tick(1)
 
+        # Start game when timer reaches 0
+        countdown -= 1
         if countdown == 0:
             input_text = ""
             game()
-
-        countdown -= 1
-
-
-# Hard
-def hard():
-
-    random_word()
-
-    global word
-    global input_text
-
-    countdown = 1
-
-    while True:
-        # If exit button pressed
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-
-        # Background
-        window.fill(white)
-
-        # Display word
-        TextSurf, TextRect = text_objects(f"The word is: {word}", largeText)
-        TextRect.center = (center)
-        window.blit(TextSurf, TextRect)
-
-        # Display countdown
-        TextSurf, TextRect = text_objects(f"Starting in {countdown}...", mediumText)
-        TextRect.center = (x_center, y_center + 50)
-        window.blit(TextSurf, TextRect)
-
-        pygame.display.update()
-        clock.tick(1)
-
-        if countdown == 0:
-            input_text = ""
-            game()
-
-        countdown -= 1
 
 
 # Word generation
 def random_word():
-
     global word
     word = ""
 
@@ -338,29 +352,41 @@ def random_word():
 
 # Game
 def game():
-
-    global input_box_width
-    global input_box_height
     global input_text
+    global clicked
+
+    input_box_selected = False
 
     while True:
-        # If exit button pressed
+        # Mouse events
+        mouse_position = pygame.mouse.get_pos()
+
+        # Events
         for event in pygame.event.get():
+            # If exit button pressed
             if event.type == pygame.QUIT:
                 quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
-                    input_text = input_text[:-1]
-                elif event.key == pygame.K_RETURN:
-                    confirm()
+            # Selecting the input box
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if x_center + input_box_width/2 > mouse_position[0] > x_center - input_box_width/2 and y_center + input_box_height/2 > mouse_position[1] > y_center - input_box_height/2:
+                    input_box_selected = True
                 else:
-                    if len(input_text) < 6:
-                        input_text += event.unicode
+                    input_box_selected = False
+            # Detect keys
+            if event.type == pygame.KEYDOWN:
+                if input_box_selected:
+                    if event.key == pygame.K_BACKSPACE:
+                        input_text = input_text[:-1]
+                    elif event.key == pygame.K_RETURN:
+                        confirm()
+                    else:
+                        if len(input_text) < 6:
+                            input_text += event.unicode
 
         # Background
         window.fill(white)
 
-        # Display word
+        # Title text
         TextSurf, TextRect = text_objects("Type the word below", mediumText)
         TextRect.center = (x_center, y_center - 200)
         window.blit(TextSurf, TextRect)
@@ -369,14 +395,31 @@ def game():
         button("Enter", x_center, y_center + 200, button_width, button_height, green, bright_green, confirm)
 
         # Input box
-        pygame.draw.rect(window, black, (x_center - input_box_width/2, y_center - input_box_height/2, input_box_width, input_box_height))
-        pygame.draw.rect(window, white, (x_center - (input_box_width - 10)/2, y_center - (input_box_height - 10)/2, input_box_width - 10, input_box_height - 10))
+        if input_box_selected:
+            # Box
+            pygame.draw.rect(window, black, (x_center - input_box_width/2, y_center - input_box_height/2, input_box_width, input_box_height))
+            pygame.draw.rect(window, white, (x_center - (input_box_width - 10)/2, y_center - (input_box_height - 10)/2, input_box_width - 10, input_box_height - 10))
 
-        # Input box text
-        TextSurf, TextRect = text_objects(input_text, smallText)
-        TextRect.center = (x_center, y_center)
-        window.blit(TextSurf, TextRect)
+            # Text
+            TextSurf, TextRect = text_objects(input_text, smallText)
+            TextRect.center = (x_center, y_center)
+            window.blit(TextSurf, TextRect)
+        else:
+            # Box
+            pygame.draw.rect(window, black, (x_center - input_box_width/2, y_center - input_box_height/2, input_box_width, input_box_height))
+            pygame.draw.rect(window, grey, (x_center - (input_box_width - 10)/2, y_center - (input_box_height - 10)/2, input_box_width - 10, input_box_height - 10))
 
+            # Text
+            TextSurf, TextRect = text_objects(input_text, smallText)
+            TextRect.center = (x_center, y_center)
+            window.blit(TextSurf, TextRect)
+
+            # Warning
+            TextSurf, TextRect = warning("Warning: Text box is not selected", warningText)
+            TextRect.center = (x_center, y_center + 40)
+            window.blit(TextSurf, TextRect)
+
+        # Display update
         pygame.display.update()
         clock.tick(fps)
 
@@ -394,7 +437,6 @@ def confirm():
 
 # Correct
 def correct():
-
     while True:
         # If exit button pressed
         for event in pygame.event.get():
@@ -404,7 +446,7 @@ def correct():
         # Background
         window.fill(white)
 
-        # Display word
+        # Display correct
         TextSurf, TextRect = text_objects("Correct", largeText)
         TextRect.center = (center)
         window.blit(TextSurf, TextRect)
@@ -415,12 +457,14 @@ def correct():
         # Quit button
         button("Quit", x_center + 250, y_center + 250, button_width, button_height, red, bright_red, quit)
 
+        # Display update
         pygame.display.update()
         clock.tick(fps)
 
 
 # Incorrect
 def incorrect():
+    global word
 
     while True:
         # If exit button pressed
@@ -431,9 +475,14 @@ def incorrect():
         # Background
         window.fill(white)
 
-        # Display word
+        # Display incorrect
         TextSurf, TextRect = text_objects("Incorrect", largeText)
         TextRect.center = (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display answer
+        TextSurf, TextRect = text_objects(f"The correct answer was {word}", smallText)
+        TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
         # Menu button
@@ -442,6 +491,7 @@ def incorrect():
         # Quit button
         button("Quit", x_center + 250, y_center + 250, button_width, button_height, red, bright_red, quit)
 
+        # Display update
         pygame.display.update()
         clock.tick(fps)
 
