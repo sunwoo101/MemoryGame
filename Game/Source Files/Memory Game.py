@@ -105,6 +105,7 @@ def button(button_text, button_x, button_y, button_width, button_height, action=
 
         if mouse_click[0] == 1 and action is not None and not mouse_handled:
             # Play press sound
+            mouse_handled = True
             pygame.mixer.Sound.play(button_press_sound)
             action()
     else:
@@ -159,6 +160,7 @@ def menu():
 
         # Mouse position
         mouse_position = pygame.mouse.get_pos()
+        # Version 1
         background_x = mouse_position[0] + background_default_x
         background_y = mouse_position[1] + background_default_y
 
@@ -247,15 +249,15 @@ def instructions():
         TextRect.center = (x_center, y_center - 100)
         window.blit(TextSurf, TextRect)
 
-        TextSurf, TextRect = text_objects("Easy: 5 seconds", smallText, light_blue)
+        TextSurf, TextRect = text_objects("Easy: 10 seconds", smallText, light_blue)
         TextRect.center = (x_center, y_center - 50)
         window.blit(TextSurf, TextRect)
 
-        TextSurf, TextRect = text_objects("Medium: 3 seconds", smallText, light_blue)
+        TextSurf, TextRect = text_objects("Medium: 5 seconds", smallText, light_blue)
         TextRect.center = (x_center, y_center - 25)
         window.blit(TextSurf, TextRect)
 
-        TextSurf, TextRect = text_objects("Hard: 1 seconds", smallText, light_blue)
+        TextSurf, TextRect = text_objects("Hard: 3 seconds", smallText, light_blue)
         TextRect.center = (x_center, y_center)
         window.blit(TextSurf, TextRect)
 
@@ -284,6 +286,9 @@ def easy():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    confirm()
 
         # Mouse position
         mouse_position = pygame.mouse.get_pos()
@@ -303,6 +308,9 @@ def easy():
         TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
+        # Skip button
+        button("Skip", x_center - 50, y_center + 100, 100, button_height, game)
+
         # Display update
         pygame.display.update()
         clock.tick(fps)
@@ -310,7 +318,6 @@ def easy():
         # Start game when timer reaches 0
         timer -= 1
         if timer == 0:
-            input_text = ""
             game()
 
 
@@ -327,6 +334,9 @@ def medium():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    confirm()
 
         # Mouse position
         mouse_position = pygame.mouse.get_pos()
@@ -346,6 +356,9 @@ def medium():
         TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
+        # Skip button
+        button("Skip", x_center - 50, y_center + 100, 100, button_height, game)
+
         # Display update
         pygame.display.update()
         clock.tick(fps)
@@ -353,13 +366,11 @@ def medium():
         # Start game when timer reaches 0
         timer -= 1
         if timer == 0:
-            input_text = ""
             game()
 
 
 # Hard
 def hard():
-
     random_word()
 
     global input_text
@@ -371,6 +382,9 @@ def hard():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    confirm()
 
         # Mouse position
         mouse_position = pygame.mouse.get_pos()
@@ -390,6 +404,9 @@ def hard():
         TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
+        # Skip button
+        button("Skip", x_center - 50, y_center + 100, 100, button_height, game)
+
         # Display update
         pygame.display.update()
         clock.tick(fps)
@@ -397,7 +414,6 @@ def hard():
         # Start game when timer reaches 0
         timer -= 1
         if timer == 0:
-            input_text = ""
             game()
 
 
@@ -416,6 +432,8 @@ def random_word():
 def game():
     global input_text
     global clicked
+
+    input_text = ""
 
     input_box_selected = False
 
