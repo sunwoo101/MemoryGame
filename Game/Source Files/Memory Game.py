@@ -2,6 +2,8 @@ import pygame
 import random
 
 # Initializing pygame
+pygame.mixer.pre_init(44100, -16, 2, 2048)
+pygame.mixer.init()
 pygame.init()
 
 # Window setup
@@ -19,7 +21,7 @@ pygame.display.set_caption("Memory Game")
 
 # Variables
 clock = pygame.time.Clock()
-fps = 144
+fps = 60
 x_center = window_width/2
 y_center = window_height/2
 center = x_center, y_center
