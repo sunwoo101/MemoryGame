@@ -263,7 +263,7 @@ def instructions():
         TextRect.center = (x_center, y_center)
         window.blit(TextSurf, TextRect)
 
-        TextSurf, TextRect = text_objects("After the timer is up type the characters in to the input box.", smallText, light_blue)
+        TextSurf, TextRect = text_objects("After the timer is up type the characters into the input box.", smallText, light_blue)
         TextRect.center = (x_center, y_center + 50)
         window.blit(TextSurf, TextRect)
 
