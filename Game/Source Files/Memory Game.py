@@ -2,7 +2,7 @@ import pygame
 import random
 
 # Initializing pygame
-pygame.mixer.pre_init(44100, -16, 2, 2048)
+pygame.mixer.pre_init(44100, -16, 8, 2048)
 pygame.mixer.init()
 pygame.init()
 
@@ -97,6 +97,7 @@ def button(button_text, button_x, button_y, button_width, button_height, action=
             sound_handled_position[2] = button_y + button_height
             sound_handled_position[3] = button_y
             # Play hover sound
+            pygame.mixer.fadeout(800)
             pygame.mixer.Sound.play(button_hover_sound)
         # Button rectangle
         pygame.draw.rect(window, light_blue, (button_x, button_y, button_width, button_height))
