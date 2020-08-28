@@ -29,8 +29,10 @@ button_height = 50
 input_box_width = 400
 input_box_height = 50
 character_set = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890"
+int_list = "1234567890"
 word = ""
 input_text = ""
+timer_text = ""
 mouse_position = pygame.mouse.get_pos()
 mouse_handled = False
 sound_handled = False
@@ -210,13 +212,16 @@ def difficulty_selection():
         window.blit(TextSurf, TextRect)
 
         # Easy button
-        button("Easy", x_center - 45, y_center - 100, 90, button_height, easy)
+        button("Easy", x_center - 45, y_center - 150, 90, button_height, easy)
 
         # Medium button
-        button("Medium", x_center - 75, y_center, 150, button_height, medium)
+        button("Medium", x_center - 75, y_center - 50, 150, button_height, medium)
 
         # Hard button
-        button("Hard", x_center - 45, y_center + 100, 90, button_height, hard)
+        button("Hard", x_center - 45, y_center + 50, 90, button_height, hard)
+
+        # Custom button
+        button("Custom", x_center - 75, y_center + 150, 150, button_height, custom_input)
 
         # Back button
         button("Back", x_center - 350, y_center + 200, 100, button_height, menu)
@@ -263,8 +268,12 @@ def instructions():
         TextRect.center = (x_center, y_center)
         window.blit(TextSurf, TextRect)
 
+        TextSurf, TextRect = text_objects("Custom: Set your own timer", smallText, light_blue)
+        TextRect.center = (x_center, y_center + 25)
+        window.blit(TextSurf, TextRect)
+
         TextSurf, TextRect = text_objects("After the timer is up type the characters into the input box.", smallText, light_blue)
-        TextRect.center = (x_center, y_center + 50)
+        TextRect.center = (x_center, y_center + 75)
         window.blit(TextSurf, TextRect)
 
         # Back button
@@ -419,6 +428,137 @@ def hard():
             game()
 
 
+# Custom input
+def custom_input():
+    global timer_text
+    global clicked
+
+    timer_text = ""
+
+    timer_box_selected = False
+
+    while True:
+        # Mouse events
+        mouse_position = pygame.mouse.get_pos()
+
+        # Events
+        for event in pygame.event.get():
+            # If exit button pressed
+            if event.type == pygame.QUIT:
+                quit()
+            # Selecting the input box
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if x_center + input_box_width/2 > mouse_position[0] > x_center - input_box_width/2 and y_center + input_box_height/2 > mouse_position[1] > y_center - input_box_height/2:
+                    timer_box_selected = True
+                else:
+                    timer_box_selected = False
+            # Detect keys
+            if event.type == pygame.KEYDOWN:
+                print(event.unicode)
+                if timer_box_selected:
+                    if event.key == pygame.K_BACKSPACE:
+                        timer_text = timer_text[:-1]
+                    elif event.key == pygame.K_RETURN:
+                        custom()
+                    elif str(event.unicode) in int_list:
+                        if len(timer_text) < 2:
+                            timer_text += event.unicode
+
+        # Mouse position
+        mouse_position = pygame.mouse.get_pos()
+        background_x = mouse_position[0] + background_default_x
+        background_y = mouse_position[1] + background_default_y
+
+        # Background
+        window.blit(background, (background_x, background_y))
+
+        # Title text
+        TextSurf, TextRect = text_objects("Type in amount", mediumText, light_blue)
+        TextRect.center = (x_center, y_center - 200)
+        window.blit(TextSurf, TextRect)
+
+        # Enter button
+        button("Confirm", x_center - 73, y_center + 200, 146, button_height, custom)
+
+        # Timer box
+        if timer_box_selected:
+            # Box
+            pygame.draw.rect(window, light_blue, (x_center - input_box_width/2, y_center - input_box_height/2, input_box_width, input_box_height))
+            pygame.draw.rect(window, grey, (x_center - (input_box_width - 4)/2, y_center - (input_box_height - 4)/2, input_box_width - 4, input_box_height - 4))
+
+            # Text
+            TextSurf, TextRect = text_objects(timer_text, smallText, white)
+            TextRect.center = (x_center, y_center)
+            window.blit(TextSurf, TextRect)
+        else:
+            # Box
+            pygame.draw.rect(window, dark_grey, (x_center - input_box_width/2, y_center - input_box_height/2, input_box_width, input_box_height))
+
+            # Text
+            TextSurf, TextRect = text_objects(timer_text, smallText, white)
+            TextRect.center = (x_center, y_center)
+            window.blit(TextSurf, TextRect)
+
+            # Warning
+            TextSurf, TextRect = text_objects("Warning: Text box is not selected", warningText, red)
+            TextRect.center = (x_center, y_center + 40)
+            window.blit(TextSurf, TextRect)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+
+# Custom
+def custom():
+    random_word()
+
+    global timer_text
+    if timer_text == "":
+        timer_text = "10"
+
+    timer = int(timer_text) * fps
+
+    while True:
+        # If exit button pressed
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    confirm()
+
+        # Mouse position
+        mouse_position = pygame.mouse.get_pos()
+        background_x = mouse_position[0] + background_default_x
+        background_y = mouse_position[1] + background_default_y
+
+        # Background
+        window.blit(background, (background_x, background_y))
+
+        # Display word
+        TextSurf, TextRect = text_objects(f"The word is: {word}", largeText, light_blue)
+        TextRect.center = (center)
+        window.blit(TextSurf, TextRect)
+
+        # Display timer
+        TextSurf, TextRect = text_objects(f"Starting in {round(timer/fps, 1)}...", mediumText, light_blue)
+        TextRect.center = (x_center, y_center + 50)
+        window.blit(TextSurf, TextRect)
+
+        # Skip button
+        button("Skip", x_center - 50, y_center + 100, 100, button_height, game)
+
+        # Display update
+        pygame.display.update()
+        clock.tick(fps)
+
+        # Start game when timer reaches 0
+        timer -= 1
+        if timer == 0:
+            game()
+
+
 # Word generation
 def random_word():
     global word
@@ -478,8 +618,8 @@ def game():
         TextRect.center = (x_center, y_center - 200)
         window.blit(TextSurf, TextRect)
 
-        # Enter button
-        button("Enter", x_center - 50, y_center + 200, 100, button_height, confirm)
+        # Confirm button
+        button("Confirm", x_center - 73, y_center + 200, 145, button_height, confirm)
 
         # Input box
         if input_box_selected:
