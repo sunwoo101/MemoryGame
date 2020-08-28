@@ -454,7 +454,6 @@ def custom_input():
                     timer_box_selected = False
             # Detect keys
             if event.type == pygame.KEYDOWN:
-                print(event.unicode)
                 if timer_box_selected:
                     if event.key == pygame.K_BACKSPACE:
                         timer_text = timer_text[:-1]
